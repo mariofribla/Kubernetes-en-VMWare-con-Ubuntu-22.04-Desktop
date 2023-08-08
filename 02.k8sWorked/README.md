@@ -96,9 +96,11 @@ Ahora comenzaran una serie de comandos que deberás ejecutar para la instalació
 Debemos ingresar a una Terminal.
 ### 1. Actualizamos el Ubuntu 22.04.
 
-`$ sudo apt update`
-`$ sudo apt -y full-upgrade`
-`$ sudo reboot -f`
+```
+$ sudo apt update
+$ sudo apt -y full-upgrade
+$ sudo reboot -f
+```
 
 **Esperamos que reinicie la máquina virtual. ingresamos a Linux y abrimos una Terminal.**
 
@@ -118,13 +120,15 @@ Debemos ingresar a una Terminal.
 
 ### 3. Asignamos correctamente el nombre del hostname.
 
-`$ sudo hostnamectl set-hostname "k8sworked01.k8s.local"`
-`$ hostname`
+```
+$ sudo hostnamectl set-hostname "k8sworked01.k8s.local"
+$ hostname
+```
 
 ### 4. Editemos el archivo hosts de nuestro Ubuntu *k8sworked01*.
 
-`$ sudo vi /etc/hosts`
 ```
+$ sudo vi /etc/hosts
 192.168.123.220 k8sdns.k8s.local k8sdns
 192.168.123.210 k8smaster.k8s.local k8smaster
 192.168.123.212 k8sworked01.k8s.local k8sworked01
@@ -134,32 +138,45 @@ Aunque no existan los demás máquinas virtuales, las dejamos ya creadas.
 
 Además comentaremos la siguiente línea con un `#`:
 
-`#127.0.1.1      k8sworked01.k8s.local      k8sworked01`
+```
+#127.0.1.1      k8sworked01.k8s.local      k8sworked01
+```
 
 Grabamos y salimos del editor.
 
 ### 5. Deshabilitamos de la máquina virtual el swap o espacio de intercambio.
 
-`$ sudo swapoff -a`
-`$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab`
+```
+$ sudo swapoff -a
+$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
 
 Validamos
-`$ free -h`
+
+```
+$ free -h
+```
+
 
 Confirmemos el cambio anterior.
 
-`$ sudo mount -a`
-`$ free -h`
+```
+$ sudo mount -a
+$ free -h
+```
 
 ### 6. Habilitamos algunos módulos del Kernel Linux.
 
-`$ sudo modprobe overlay`
-`$ sudo modprobe br_netfilter`
+```
+$ sudo modprobe overlay
+$ sudo modprobe br_netfilter
+```
+
 
 ### 7. Habilitamos algunos opciones del sysctl. Si copia este comando, recomiendo copiar línea a línea.
 
-`$ sudo tee /etc/sysctl.d/kubernetes.conf <<EOF`
 ```
+$ sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
@@ -167,35 +184,47 @@ EOF
 ```
 
 Recargamos el sysctl
-`$ sudo sysctl --system`
+
+```
+$ sudo sysctl --system
+```
+
 
 ### 8. Instalación de todos los paquetes necesarios para el Cluster Kubernetes en Ubuntu 22.04.
 
-`$ sudo apt install curl apt-transport-https -y` 
-`$ sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates`
-`$ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg`
-`$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"`
-`$ sudo apt update`
+```
+$ sudo apt install curl apt-transport-https -y
+$ sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+$ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+$ sudo apt update
+```
 
 **Una buena forma de instalar un Cluster Kubernetes localmente, es utilizando **Containerd**, que es un 
 Daemon que nos permite iniciar, crear y ejecutar contenedores basado y creado por **Docker****.
 
-`$ sudo apt install -y containerd.io`
-`$ containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1`
-`$ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml`
-`$ sudo systemctl restart containerd`
-`$ sudo systemctl enable containerd`
+```
+$ sudo apt install -y containerd.io
+$ containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+$ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+$ sudo systemctl restart containerd
+$ sudo systemctl enable containerd
+```
 
 **Agregamos el repositorio de Kubernetes.**
 
-`$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg`
-`$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"`
-`$ sudo apt update`
+```
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg
+$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+$ sudo apt update
+```
 
 **Instalamos los paquetes **Kubectl**, **Kubeadm** y **Kubelet**.**
 
-`$ sudo apt install -y kubelet kubeadm kubectl`
-`$ sudo apt-mark hold kubelet kubeadm kubectl`
+```
+$ sudo apt install -y kubelet kubeadm kubectl
+$ sudo apt-mark hold kubelet kubeadm kubectl
+```
 
 **Listo!!.. Terminamos la instalación de paquetes.**
 
@@ -204,11 +233,15 @@ Para integrarnos o unirnos al Cluster de Kubernetes o k8S Master necesitamos eje
 
 El comando que debemos ejecutar en los **Worked** es:
 
-`$ sudo kubeadm join k8smaster.k8s.local:6443 --token 5ucnb0.egd4ie1sh8erveob --discovery-token-ca-cert-hash sha256:b556c4ffc46a1187b35f55ba4a06dbd91abd97ad1366b618f199f5614edcd28b`
+```
+$ sudo kubeadm join k8smaster.k8s.local:6443 --token 5ucnb0.egd4ie1sh8erveob --discovery-token-ca-cert-hash sha256:b556c4ffc46a1187b35f55ba4a06dbd91abd97ad1366b618f199f5614edcd28b
+```
+
 
 ## Validamos la integración en el Nodo K8s Master.
 Nos cambiamos al nodo Master y ejecutamos:
 
-`$ kubectl cluster-info`
-`$ kubectl get nodes`
-
+```
+$ kubectl cluster-info
+$ kubectl get nodes
+```
