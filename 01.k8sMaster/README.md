@@ -96,9 +96,11 @@ Ahora comenzaran una serie de comandos que deberás ejecutar para la instalació
 Debemos ingresar a una Terminal.
 ### 1. Actualizamos el Ubuntu 22.04.
 
-`$ sudo apt update`
-`$ sudo apt -y full-upgrade`
-`$ sudo reboot -f`
+```
+$ sudo apt update
+$ sudo apt -y full-upgrade
+$ sudo reboot -f
+```
 
 **Esperamos que reinicie la máquina virtual. ingresamos a Linux y abrimos una Terminal.**
 
@@ -118,15 +120,20 @@ Debemos ingresar a una Terminal.
 
 ### 3. Asignamos correctamente el nombre del hostname.
 
-`$ sudo hostnamectl set-hostname "k8smaster.k8s.local"`
-`$ hostname`
+```
+$ sudo hostnamectl set-hostname "k8smaster.k8s.local"
+$ hostname
+```
+
 
 ### 4. Editemos el archivo hosts de nuestro Ubuntu *K8smaster*.
 
-`$ sudo vi /etc/hosts`
-`192.168.123.220 k8sdns.k8s.local k8sdns`
-`192.168.123.210 k8smaster.k8s.local k8smaster`
-`192.168.123.212 k8sworked01.k8s.local k8sworked01`
+```
+$ sudo vi /etc/hosts
+192.168.123.220 k8sdns.k8s.local k8sdns
+192.168.123.210 k8smaster.k8s.local k8smaster
+192.168.123.212 k8sworked01.k8s.local k8sworked01
+```
 
 Aunque no existan los demás máquinas virtuales, las dejamos ya creadas. 
 
