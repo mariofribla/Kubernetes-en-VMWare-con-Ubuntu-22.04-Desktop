@@ -15,35 +15,49 @@ Realice esta instalación en el nodo **K8S Master**
 
 Instalamos los siguientes paquetes:
 
-`sudo apt update`
+```
+sudo apt update
+```
 
 Validamos que estén instalado estos paquetes.
 
-`sudo apt install wget curl -y`
+```
+sudo apt install wget curl -y
+```
 
 ### 2. Descargamos el manifiesto e instalamos MetalLB.
-`$ MetalLB_RTAG=$(curl -s https://api.github.com/repos/metallb/metallb/releases/latest|grep tag_name|cut -d '"' -f 4|sed 's/v//')`
-`$ echo $MetalLB_RTAG`
 
-`$ mkdir ~/metallb`
-`$ cd ~/metallb`
+```
+$ MetalLB_RTAG=$(curl -s https://api.github.com/repos/metallb/metallb/releases/latest|grep tag_name|cut -d '"' -f 4|sed 's/v//')
+$ echo $MetalLB_RTAG
+```
+```
+$ mkdir ~/metallb
+$ cd ~/metallb
 
-`$ wget https://raw.githubusercontent.com/metallb/metallb/v$MetalLB_RTAG/config/manifests/metallb-native.yaml`
+$ wget https://raw.githubusercontent.com/metallb/metallb/v$MetalLB_RTAG/config/manifests/metallb-native.yaml
+```
 
 Desplegamos en el Cluster MetalLB.
 
-`$ kubectl apply -f metallb-native.yaml`
+```
+$ kubectl apply -f metallb-native.yaml
+```
 
 Validamos el Despliegue.
 
-`$ kubectl get pods -n metallb-system`
-`$ kubectl get all -n metallb-system`
+```
+$ kubectl get pods -n metallb-system
+$ kubectl get all -n metallb-system
+```
+
 
 **Para que funcione correctamente MetalLB, tendremos que definir un IP o un rango de IP's para su asignación al Cluster.**
 
 Para esto debemos crear un manifiesto con la siguiente estructura:
-`$ vi ~/metallb/ipaddress_pools.yaml`
+
 ```
+$ vi ~/metallb/ipaddress_pools.yaml
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -62,18 +76,24 @@ spec:
   ipAddressPools:
   - k8s-cluster
 ```
+
 Desplegamos el archivo manifiesto.
 
-`$ kubectl apply -f ~/metallb/ipaddress_pools.yaml`
+```
+$ kubectl apply -f ~/metallb/ipaddress_pools.yaml
+```
 
 Validamos el despliegue realizado.
 
-`$ kubectl get ipaddresspools.metallb.io  -n metallb-system`
-`$ kubectl describe ipaddresspools.metallb.io k8s-cluster -n metallb-system`
+```
+$ kubectl get ipaddresspools.metallb.io  -n metallb-system
+$ kubectl describe ipaddresspools.metallb.io k8s-cluster -n metallb-system
+```
 
-**Adicionalmente, podemos mencionar sobre la asignación de IP, podemos definir de las siguientes formas:**
+**Adicionalmente, podemos mencionar sobre la asignación de IP's las siguientes formas:**
 
 Las direcciones IP se pueden definir por **CIDR** , **por rango** , y se pueden asignar **direcciones IPV4 e IPV6 .**
+
 ```
 ...
 spec:
