@@ -97,9 +97,11 @@ Ahora comenzaran una serie de comandos que deberás ejecutar para la instalació
 Debemos ingresar a una Terminal.
 ### 1. Actualizamos el Ubuntu 22.04.
 
-`$ sudo apt update`
-`$ sudo apt -y full-upgrade`
-`$ sudo reboot -f`
+```
+$ sudo apt update
+$ sudo apt -y full-upgrade
+$ sudo reboot -f
+```
 
 **Esperamos que reinicie la máquina virtual. ingresamos a Linux y abrimos una Terminal.**
 
@@ -119,18 +121,22 @@ Debemos ingresar a una Terminal.
 
 ### 3. Asignamos correctamente el nombre del hostname.
 
-`$ sudo hostnamectl set-hostname "k8sdns.k8s.local"`
-`$ hostname`
+```
+$ sudo hostnamectl set-hostname "k8sdns.k8s.local"
+$ hostname
+```
 
 ### 4. Editemos el archivo hosts de nuestro Ubuntu *K8sdns*.
 
-`$ sudo vi /etc/hosts`
 ```
+$ sudo vi /etc/hosts
 192.168.123.220 k8sdns.k8s.local k8sdns
 ```
 Además comentaremos la siguiente línea con un `#`:
 
-`#127.0.1.1      k8sdns.k8s.local      k8sdns`
+```
+#127.0.1.1      k8sdns.k8s.local      k8sdns
+```
 
 Grabamos y salimos del editor.
 
@@ -153,17 +159,26 @@ Crearemos 3 archivos descritos en la grafica anterior, posterior a la instalaci�
 
 ### 1. Instalando el paquete Bind9.
 
-`$ sudo apt install -y bind9`
-`$ sudo apt install -y dnsutils`
+```
+$ sudo apt install -y bind9
+$ sudo apt install -y dnsutils
+```
 
 ### 2. Configurando Bind9.
-`$ sudo su -`
-`$ cd /etc/bind`
+
+```
+$ sudo su -
+$ cd /etc/bind
+```
 
 Definimos los servidores DNS principales, ISP, IEU entre otros, lo cual reenviará la consulta solicitado si no la encuentra.
 
-`$ sudo vi /etc/bind/named.conf.options`
+```
+$ sudo vi /etc/bind/named.conf.options
+```
+
 Descomentariamos y reemplazamos con estos valores.
+
 ```
         forwarders {
          192.168.123.254;
@@ -172,20 +187,31 @@ Descomentariamos y reemplazamos con estos valores.
         };
 ```
 Reiniciamos los servicios.
-`$ sudo systemctl restart bind9`
-`$ sudo systemctl status bind9`
 
-`$ sudo vi /etc/bind/named.conf.local`
+```
+$ sudo systemctl restart bind9
+$ sudo systemctl status bind9
+```
+
+```
+$ sudo vi /etc/bind/named.conf.local
+```
+
 Agregamos al final del archivo.
+
 ```
 zone "k8s.local" {
     type master;
     file "/etc/bind/db.k8s.local";
 };
 ```
-`$ sudo cp /etc/bind/db.local /etc/bind/db.k8s.local`
-`$ sudo vi /etc/bind/db.k8s.local`
+```
+$ sudo cp /etc/bind/db.local /etc/bind/db.k8s.local
+$ sudo vi /etc/bind/db.k8s.local
+```
+
 Modificamos el archivo recién copiado.
+
 ```
 @       IN      SOA     k8s.local. root.k8s.local. (
                               3         ; Serial
@@ -199,23 +225,35 @@ Modificamos el archivo recién copiado.
 @       IN      AAAA    ::1
 k8sdns  IN      A       192.168.123.220
 ```
+
 Recordemos el el Dominio definido para este tutorial es **k8s.local** y el hostname **k8sdns**.
 
 Reiniciamos los servicios.
-`$ sudo systemctl restart bind9`
-`$ sudo systemctl status bind9`
 
-`$ sudo vi /etc/bind/named.conf.local`
+```
+$ sudo systemctl restart bind9
+$ sudo systemctl status bind9
+```
+
+```
+$ sudo vi /etc/bind/named.conf.local
+```
+
 Agregamos al final del archivo la zona de búsqueda inversa.
+
 ```
 zone "123.168.192.in-addr.arpa" {
     type master;
     file "/etc/bind/db.192";
 };
 ```
-`$ sudo cp db.127 db.192`
-`$ sudo vi /etc/bind/db.192`
+```
+$ sudo cp db.127 db.192
+$ sudo vi /etc/bind/db.192
+```
+
 Modificamos el archivo recién copiado.
+
 ```
 ; BIND reverse data file for local 192.168.123.xxx network
 $TTL    604800
@@ -229,23 +267,33 @@ $TTL    604800
 @       IN      NS      k8sdns.
 192     IN      PTR     k8sdns.k8s.local.
 ```
-Reiniciamos los servicios.
-`$ sudo systemctl restart bind9`
-`$ sudo systemctl status bind9`
 
-`$ sudo vi /etc/resolv.conf`
-Modificamos el archivo recién copiado.
+Reiniciamos los servicios.
+
 ```
+$ sudo systemctl restart bind9
+$ sudo systemctl status bind9
+```
+
+Modificamos el archivo.
+
+```
+$ sudo vi /etc/resolv.conf
 nameserver 192.168.123.220
 options edns0 trust-ad
 search k8s.local
 ```
+
 Reiniciamos los servicios por ultima vez.
-`$ sudo systemctl restart bind9`
-`$ sudo systemctl status bind9`
+
+```
+$ sudo systemctl restart bind9
+$ sudo systemctl status bind9
+```
 
 ### 3. Validamos el DNS.
 Realizaremos una serie de comandos para validar su funcionamiento.
+
 ```
 $ ping 192.168.123.220
 $ dig -x 127.0.0.1
@@ -255,22 +303,31 @@ $ ping k8sdns.k8s.local
 $ ping k8smaster.k8s.local
 $ ping k8sworked01.k8s.local
 ```
+
 Los ping a los dns **k8smaster.k8s.local** y **k8sworked01.k8s.local**, no tendrán resolución de IP, dado que no están registrados en el DNS. Ahora veremos como registramos estos subdominios.
 
 ### 3. Agregando Subdominios al DNS.
 
-`$ sudo vi /etc/bind/db.k8s.local`
+```
+$ sudo vi /etc/bind/db.k8s.local
+```
+
 Agregamos al final de archivo.
+
 ```
 k8sdns          IN      A       192.168.123.220
 k8smaster       IN      A       192.168.123.210
 k8sworked01     IN      A       192.168.123.212
 ```
+
 Reiniciamos los servicios para actualizar el DNS.
-`$ sudo systemctl restart bind9`
-`$ sudo systemctl status bind9`
-`$ ping k8smaster.k8s.local`
-`$ ping k8sworked01.k8s.local`
+
+```
+$ sudo systemctl restart bind9
+$ sudo systemctl status bind9
+$ ping k8smaster.k8s.local
+$ ping k8sworked01.k8s.local
+```
 
 Ahora si nos responden IP los subdominios **k8smaster** y **k8sworked01**
 
