@@ -26,7 +26,7 @@ Tambien implementaremos un servidor DNS que nos ayudara a demostrar la implement
 	* Comenzamos con la Instalación del DNS.
 	* Iniciando el Servicio DNS.
 
-Como infraestructura que utilizaremos es:
+La infraestructura que utilizaremos es:
 
 **Nota**: Como caso practico, solo crearemos un Worked. Si desea crear más, solo deberá crear máquinas virtuales con las características que se mencionan para Worked01.
 
