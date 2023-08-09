@@ -33,10 +33,10 @@ Como infraestructura que utilizaremos es:
 >k8s.local, es el dominio que se define para este tutorial. Asigne un nuevo nombre o uno existente en su organización de dominio si desea en este punto, asi como los nombre de los Host.
 
 
-|Servidor        |HostName             |CPU          |RAM |IP              | HDD                          | Comentarios      |
-|----------------|---------------------|-------------|----|----------------|------------------------------|------------------|
-|Master K8s       |k8smaster.k8s.local  |1vCPU 2 Core |4Gb |192.168.123.210 |20GB mínimo( 40Gbrecomendado) |Salida a Internet |
-|Worked01 K8s    |k8sworked01.k8s.local |1vCPU 2 Core |4Gb |192.168.123.212 |20GB mínimo( 40Gbrecomendado) |Salida a Internet |
+|Servidor        |HostName             |CPU          |RAM |IP              | HDD                            | Comentarios      |
+|----------------|---------------------|-------------|----|----------------|--------------------------------|------------------|
+|Master K8s       |k8smaster.k8s.local  |1vCPU 2 Core |4Gb |192.168.123.210 |20GB mínimo( 40Gb recomendado) |Salida a Internet |
+|Worked01 K8s    |k8sworked01.k8s.local |1vCPU 2 Core |4Gb |192.168.123.212 |20GB mínimo( 40Gb recomendado) |Salida a Internet |
 
 >Adicionalmente, crearemos un servidor de DNS para facilitar la exposición de los aplicativos y/o servicios desplegados en el Cluster Kubernetes.
 

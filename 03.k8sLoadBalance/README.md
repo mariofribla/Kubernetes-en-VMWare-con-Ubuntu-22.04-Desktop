@@ -76,7 +76,7 @@ spec:
   ipAddressPools:
   - k8s-cluster
 ```
-
+ 
 Desplegamos el archivo manifiesto.
 
 ```

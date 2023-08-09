@@ -100,6 +100,7 @@ Debemos ingresar a una Terminal.
 ```
 $ sudo apt update
 $ sudo apt -y full-upgrade
+
 $ sudo reboot -f
 ```
 
@@ -235,13 +236,10 @@ $ sudo systemctl restart bind9
 $ sudo systemctl status bind9
 ```
 
-```
-$ sudo vi /etc/bind/named.conf.local
-```
-
 Agregamos al final del archivo la zona de búsqueda inversa.
 
 ```
+$ sudo vi /etc/bind/named.conf.local
 zone "123.168.192.in-addr.arpa" {
     type master;
     file "/etc/bind/db.192";
@@ -296,10 +294,12 @@ Realizaremos una serie de comandos para validar su funcionamiento.
 
 ```
 $ ping 192.168.123.220
+$ ping k8sdns.k8s.local
+
 $ dig -x 127.0.0.1
 $ dig -x google.cl
 $ dig -x ubuntu.com
-$ ping k8sdns.k8s.local
+
 $ ping k8smaster.k8s.local
 $ ping k8sworked01.k8s.local
 ```
@@ -325,6 +325,7 @@ Reiniciamos los servicios para actualizar el DNS.
 ```
 $ sudo systemctl restart bind9
 $ sudo systemctl status bind9
+
 $ ping k8smaster.k8s.local
 $ ping k8sworked01.k8s.local
 ```
